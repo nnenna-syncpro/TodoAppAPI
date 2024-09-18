@@ -2,7 +2,7 @@
 {
     public class Priority
     {
-        public int PriorityId { get; set; }
+        public string PriorityId { get; set; }
         public string Title { get; set; }
     }
 }

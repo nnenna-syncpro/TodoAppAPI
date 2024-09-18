@@ -22,7 +22,7 @@ namespace TodoAppAPI.Models
         public string PriorityId { get; set; }
         [ValidateNever]
         public Priority Priority { get; set; }
-        public bool Overdue => StatusId == "open" && DueDate < DateTime.Today;
+        public bool Overdue => StatusId == "open" || StatusId == "progress" && DueDate < DateTime.Today;
         public DateTime CreatedDate { get; set; }
         public DateTime LastModifiedDate { get; set; }
     }
