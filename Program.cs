@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using TodoAppAPI.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +10,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//add dbcontext to the service
+builder.Services.AddDbContext<TodoDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("TodoDbConnectionString")));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
