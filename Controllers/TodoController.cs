@@ -107,7 +107,6 @@ namespace TodoAppAPI.Controllers
             }
         }
 
-        // GET: api/Todo/5
         [HttpGet]
         [Route("get-todo-by-id/{id}")]
         public async Task<IActionResult> GetTodoById(int id)
@@ -129,6 +128,35 @@ namespace TodoAppAPI.Controllers
 
             }
             catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("delete-todo/{id}")]
+        public async Task<IActionResult> DeleteTodo(int id)
+        {
+            try
+            {
+                if (id <= 0 || id == null)
+                {
+                    return BadRequest("Task id is invalid");
+                }
+                var todo = await _todoDbcontext.Todos.FindAsync(id);
+
+                if (todo == null)
+                {
+                    return BadRequest("You cannot delete a todo item that doesnt exist");
+                }
+
+                _todoDbcontext.Todos.Remove(todo);
+                await _todoDbcontext.SaveChangesAsync();
+
+                return NoContent();
+
+            }
+            catch (Exception ex)
+            {
                 return BadRequest(ex.Message);
             }
         }
