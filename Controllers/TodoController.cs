@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoAppAPI.Data;
+using TodoAppAPI.DTOs;
 using TodoAppAPI.Models;
 
 namespace TodoAppAPI.Controllers
@@ -38,5 +39,34 @@ namespace TodoAppAPI.Controllers
         //    return await _todoDbcontext.Todos.ToListAsync();
         //}
 
+        [HttpPost]
+        [Route("add-todo")]
+        public async Task<IActionResult> CreateTodo(TodoDto todo)
+        {
+            try
+            {
+                if (todo == null)
+                {
+                    return BadRequest("You cannot create an invalid task");
+                }
+                var newTodo = new Todo
+                {
+                    Description = todo.Description,
+                    IsCompleted = todo.IsCompleted,
+                    CategoryId = todo.CategoryId,
+                    StatusId = todo.StatusId,
+                    CreatedDate = DateTime.Now,
+                    PriorityId = todo.PriorityId,
+                    DueDate = todo.DueDate != null ? todo.DueDate : null
+                };
+                _todoDbcontext.Todos.Add(newTodo);
+                await _todoDbcontext.SaveChangesAsync();
+
+                return Ok("You successfully created a new task");
+            }
+            catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
