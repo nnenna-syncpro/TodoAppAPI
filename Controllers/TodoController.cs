@@ -106,5 +106,31 @@ namespace TodoAppAPI.Controllers
                 return BadRequest($"{ex.Message}");
             }
         }
+
+        // GET: api/Todo/5
+        [HttpGet]
+        [Route("get-todo-by-id/{id}")]
+        public async Task<IActionResult> GetTodoById(int id)
+        {
+            try
+            {
+                if(id <= 0 || id == null)
+                {
+                    return NotFound();
+                }
+                var todo = await _todoDbcontext.Todos.FindAsync(id);
+
+                if (todo == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(todo);
+
+            }
+            catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
