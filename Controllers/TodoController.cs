@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using TodoAppAPI.Data;
 using TodoAppAPI.DTOs;
 using TodoAppAPI.Models;
@@ -64,8 +65,45 @@ namespace TodoAppAPI.Controllers
 
                 return Ok("You successfully created a new task");
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("update-todo/{id}")]
+        public async Task<IActionResult> UpdateTodo(int id, TodoDto todo)
+        {
+            try
+            {
+                if (todo == null || todo.Id == null || todo.Id <= 0 || id != todo.Id)
+                {
+                    return BadRequest("You cannot update an invalid task");
+                }
+                //check if todo exist in db
+                var dbTodo = _todoDbcontext.Todos.Where(x => x.Id == todo.Id).FirstOrDefault();
+                if (dbTodo == null)
+                {
+                    return BadRequest("You cannot update a task that does not exist");
+                }
+                //if todo exists the update it
+                dbTodo.Description = todo.Description;
+                dbTodo.IsCompleted = todo.IsCompleted;
+                dbTodo.CategoryId = todo.CategoryId;
+                dbTodo.StatusId = todo.StatusId;
+                dbTodo.PriorityId = todo.PriorityId;
+                dbTodo.DueDate = todo.DueDate != null ? todo.DueDate : null;
+
+                //check if entity state is modified
+                _todoDbcontext.Entry(dbTodo).State = EntityState.Modified;
+                await _todoDbcontext.SaveChangesAsync();
+
+                return Ok("You successfully updated a task");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}");
             }
         }
     }
